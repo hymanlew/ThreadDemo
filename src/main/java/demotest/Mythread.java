@@ -9,6 +9,7 @@ public class Mythread extends Thread{
 }
 
 class MyRunable implements Runnable{
+    @Override
     public void run() {
         System.out.println("运行中！");
     }

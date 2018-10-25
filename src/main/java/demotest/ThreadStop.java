@@ -59,13 +59,30 @@ public class ThreadStop {
         }
     }
 
+    public static void t4(){
+        try {
+            SynchTest synchTest = new SynchTest();
+            Mthread1 mthread = new Mthread1(synchTest);
+            mthread.start();
+            Thread.sleep(1000);
+            mthread.stop();
+            // stop 方法已经作废，因为如果强制停止线程，会对已经锁定的对象进行解锁，导致数据得不到同步的处理，出现线程安全问
+            // 题导致数据不一致。
+            System.out.println(synchTest.getName()+"==="+synchTest.getPass());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         // interrupt 方法测试终止线程
         //t1();
         // 线程外部使用 stop 方法
         //t2();
         // 线程内部使用 stop 方法
-        t3();
+        //t3();
+        // 使用 stop 方法会导致数据异常，不一致
+        t4();
     }
 }
 
@@ -100,6 +117,9 @@ class Mthread extends Thread{
     //            if(this.isInterrupted()){
     //                System.out.println("手动终止线程！");
     //                throw new InterruptedException();
+    //                直接 return 也可以实现终止线程的操作。不过还是建议使用 “抛异常” 的方法来实现，因为在 catch 中还可以
+    //                将异常向上抛，使线程停止的事件得以传播。
+    //                return;
     //            }
     //            System.out.println(i);
     //        }
@@ -158,5 +178,51 @@ class Mthread extends Thread{
             e.printStackTrace();
 
         }
+    }
+}
+
+class SynchTest {
+    private String name = "abc";
+    private String pass = "123";
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPass() {
+        return pass;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
+    }
+
+    synchronized public void print(String name,String pass){
+        try {
+            this.name = name;
+            Thread.sleep(10000);
+            this.pass = pass;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+
+class Mthread1 extends Thread{
+
+    private SynchTest synchTest;
+
+    public Mthread1(SynchTest syn){
+        this.synchTest = syn;
+    }
+
+    @Override
+    public void run() {
+        super.run();
+        synchTest.print("test","test");
     }
 }
