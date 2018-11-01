@@ -1,6 +1,8 @@
 package demotest;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -99,14 +101,62 @@ public class ThreadSafe {
         thread.start();
     }
 
+    public static void t4(){
+        demo demo = new demo();
+        Mythreadb mythreadb = new Mythreadb(demo);
+        mythreadb.setName("a");
+        mythreadb.start();
 
+        Thread thread = new Thread(){
+            @Override
+            public void run() {
+                demoService service = new demoService();
+                service.serviceMethod(demo,"b");
+            }
+        };
+        thread.setName("b");
+        thread.start();
+
+        try {
+            /**
+             * 而如果锁定的不是同一对象，则多线程在执行带有分支判断的方法时（执行不同的同步块时，在本例中为另一对象中的不同的
+             * 同步方法），就会出现逻辑上的错误，就可能出现脏读。
+             * 而解决的方案就是，想办法让其锁定的是同一对象，对操作的对象进行唯一性的锁定（即创建为一个单例对象）。
+             */
+            Thread.sleep(6000);
+            System.out.println("size == "+demo.getSize());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void t5(){
+        /**
+         * 当静态方法使用 synchronized 修饰后，该方法一定具有同步效果。
+         * 当静态方法与非静态方法同时声明了synchronized 时，它们之间是非互斥关系的。因为静态方法锁的是当前类对象即 class 锁，
+         * 而 class 锁可以对类的所有对象实例都起作用。即即使创建了多个实例对象，但是在执行静态同步方法时，还是会同步执行。
+         * 同步 synchronized（class）块的作用和静态同步方法的作用是一样的。
+         *
+         * 而非静态方法锁的是当前方法所属的实例对象。
+         *
+         * 一个线程执行静态方法时，另一个线程可以同时执行非静态方法，只有在执行同一个方法时才互斥。
+         *
+         * 数据类型 string 的常量池特性：
+         * 在 JVM 中具有 string 常量池缓存的功能，当使用 synchronized（string）同步块时，就要清楚在多线程执行时，它们都是持
+         * 有相同的锁（因为是常量），所以会同步执行。
+         * 因此大多数情况下，同步块都不使用 string 作为锁对象，而改用其他。比如 new object 实例一个对象，但它并不放入缓存中。
+         */
+    }
 
     public static void main(String[] args) {
         // 可重入锁
         //t1();
         // 异常自动解锁
         //t2();
-        t3();
+        // 非 this 同步块
+        //t3();
+        // 非 this 同步块脏读
+        t4();
     }
 }
 
@@ -115,11 +165,18 @@ class Mythreadb extends Thread{
     public Mythreadb(demo d){
         this.demo = d;
     }
+
+    //@Override
+    //public void run() {
+    //    super.run();
+    //    //demo.t1();
+    //    demo.t5();
+    //}
+
     @Override
     public void run() {
-        super.run();
-        //demo.t1();
-        demo.t5();
+       demoService service = new demoService();
+       service.serviceMethod(demo,"a");
     }
 }
 
@@ -181,5 +238,31 @@ class demo{
                 e.printStackTrace();
             }
         }
+    }
+
+
+    private List list = new ArrayList();
+    synchronized public void add(String data){
+        list.add(data);
+    }
+    synchronized public int getSize(){
+        return list.size();
+    }
+}
+
+class demoService{
+    public demo serviceMethod(demo demo,String data){
+        try {
+            synchronized (demo){
+                if(demo.getSize()<1){
+                    // 模拟从远程要花费 2 秒的时间，取回数据
+                    Thread.sleep(2000);
+                    demo.add(data);
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return demo;
     }
 }

@@ -28,6 +28,7 @@ public class DataShare {
         a.start();
         System.out.println("外部线程 == "+a.getName());
         System.out.println("外部存活 == "+a.isAlive());
+        System.out.println("外部 current_name == "+Thread.currentThread().getName());
     }
 
     public static void checkThread1(){
@@ -46,7 +47,7 @@ public class DataShare {
      * 法是被具体线程（即自定义的主线程）调用的。
      *
      * 使用Thread.currentThread().getName() 和使用 this.getName()和 对象实例.getName(),都可以得到线程的名称，但是使用 this
-     * 调用 getName()方法只能在本类中，而不能在其他类中，更不能在Runnable接口中，所以只能使用 Thread.currentThread().getName()
+     * 调用 getName()方法只能在本类中，而不能在其他类中，更不能在Runnable接口中。所以在实现接口的方式中，只能使用 Thread.currentThread().getName()
      * 获取线程的名称，否则会出现编译时异常。
      *
      * Thread.currentThread().getName()，对象实例.getName() 和 this.getName(）区别：
@@ -58,13 +59,14 @@ public class DataShare {
      * 例.getName() 和 this.getName(），这3个区别都不存在，都是相同的。因为没有交给 Thread执行，而是直接调用的当前实例本身。
      *
      * 首先要清楚 a 和 threadName 是两个完全不同的对象，他俩之间唯一的关系就是把 t 传递给 a 对象仅仅是为了让 a 调用 t 对象的
-     * run方法， 在run方法中 调用this.getName 获取的是 a 这个父类的状态，父类没有被重写所以跟实例的不同，而在外部 a.getName
-     * 和 Thread.currentThread().getName 拿到的是 t 这个子类的实例，所以结果相同。
-     * 正常的话按道理对象继承父类 this也应该实例的，set的话也是可以设置到父类中的，至于为什么线程中会出现这种结果，重点还是这
-     * 句首先要清楚 a 和 t 是两个完全不同的对象，他俩之间唯一的关系就是把 t 传递给 a 对象仅仅是为了让 a 调用 t 对象的run方法。
+     * run方法。在run方法中，调用 this.getName 获取的是当前具体执行的线程 name（即 t），而 Thread.currentThread().getName
+     * 拿到的是当前的外部主线程（即主调用线程）的 name。所以 currentThread().getName 与外部的 a.getName 名称相同。
+     *
+     * 正常的话按道理来说，对象继承父类 this也应该实例的，set的话也是可以设置到父类中的，重点还是要清楚 a 和 t 是两个完全不同
+     * 的对象，他俩之间唯一的关系就是把 t 传递给 a 对象仅仅是为了让 a 调用 t 对象的run方法。
      *
      * 综上所述，调用线程如果是 Thread继承的方式，外部使用 Thread.currentThread().getName 或者 对象实例.getName()，内部使用
-     * Thread.currentThread().getName 就不会出现获取不一致的问题。同样的此问题也适用于 a.is
+     * Thread.currentThread().getName 就不会出现获取不一致的问题。同样的此问题也适用于 a.isAlive()
      * 而如果是实现 runnable 的方式创建的线程，则只有一个线程组名，不会有其他子线程。也不能调用 this。
      *
      *
@@ -124,8 +126,8 @@ class Mythread2 extends Thread{
 class ThreadName extends Thread{
     public ThreadName(){
         System.out.println("构造器执行 ==");
-        System.out.println("构造线程 == "+Thread.currentThread().getName());
-        System.out.println("构造getname == "+this.getName());
+        System.out.println("current_name == "+Thread.currentThread().getName());
+        System.out.println("this_name == "+this.getName());
         System.out.println("构造存活 == "+this.isAlive());
         System.out.println("构造器结束 ==");
     }
@@ -133,8 +135,8 @@ class ThreadName extends Thread{
     @Override
     public void run() {
         System.out.println("重写方法执行 ==");
-        System.out.println("重写线程 == "+Thread.currentThread().getName());
-        System.out.println("重写getname == "+this.getName());
+        System.out.println("current_name == "+Thread.currentThread().getName());
+        System.out.println("this_name == "+this.getName());
         System.out.println("重写存活 == "+this.isAlive());
         System.out.println("重写结束 ==");
     }
@@ -148,6 +150,7 @@ class TName implements Runnable{
         System.out.println("构造器结束==");
     }
 
+    @Override
     public void run() {
         System.out.println("重写方法执行==");
         System.out.println("重写线程=="+Thread.currentThread().getName());
