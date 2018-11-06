@@ -37,8 +37,15 @@ class CircuDemo {
     private boolean flag = true;
 
     public synchronized void sub(){
-        // 这里也可以使用 if 判断，但是 while 更好。
-        // 因为使用 wait 方法时，有可能会出现伪唤醒（即没有接到 notify 而自动唤醒）。为了防止这种情况，使用 while 则会更加安全。
+        /**
+         * 这里也可以使用 if 判断，但是尽量不用，而是用 while 更好。
+         * 因为使用 wait 方法时，有可能会出现伪唤醒（即没有接到 notify 而自动唤醒）。为了防止这种情况，使用 while 则会更加安全。
+         *
+         * 并且还有一种情况，就是 if 只会判断一次，在 wait 状态接到 notify 时，该线程就会被唤醒，就会往下继续执行代码，而不会再
+         * 进行条件判断。
+         * 而使用 while 时，即使当前线程已经被唤醒，只要它处在一个循环体中，它继续往下执行完循环内的代码后，还是会循环判断当前的
+         * 条件。这样就可以避免这种问题。
+         */
         while (!flag){
             try {
                 this.wait();

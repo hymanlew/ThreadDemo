@@ -32,6 +32,54 @@ public class Main {
      * 并且锁是要加在线程访问的执行资源类的内部方法中，而不是加在线程代码中，以实现高类聚性。
      */
 
+
+    /**
+     * {@link java.lang.ThreadGroup}示例
+     *
+     * 1，线程组表示一个线程的结合。此外线程组也可以包含其他线程组。线程组构成一棵树。在树中，除了初始线程组外，每个线程组都有一
+     *    个父线程组。
+     *
+     * 2，每个线程产生时，都会被归入某个线程组(Java中每个线程都是属于某个线程组)，视线程是在那个线程组中产生而定。如果没有指定，
+     *    则归入产生该子线程的线程的线程组中。(如在main中初始化一个线程，未指定线程组，则线程所属线程组为main)。
+     *
+     * 3，线程一旦归入某个组就无法更换组。
+     *
+     * 4，main线程组的parent是system线程组，而system线程组的parent为null。(参考ThreadGroup的私有构造方法)。也就是说初始线程组为
+     *    system。以 system/main 衍生出一颗树。
+     *
+     * 5，其 ThreadGroup.activeCount / ThreadGroup.enumerate 方法均为不精确的统计，建议仅用于信息目的。
+     *
+     *    前者返回此线程组中活动线程的估计数，结果并不能反映并发活动(因为多线程并发运行，所以不是很精确。多线程的不确定性，如 add
+     *    (某一新增线程启动) / remove (某一现有线程销毁))。
+     *    固有的不精确性，建议只用于信息。从源码的实现看，其计算数目只是取了一个groupsSnapshot(syncrhonized)，即当前的快照。
+     *
+     *    后者将此线程组即其子组中的所有活动线程复制到指定数组中。可事先使用 activeCount 方法获取数组大小的估计数。如果数组太小而
+     *    无法保持所有线程，则忽略额外的线程。（可额外校验该方法的返回值是否严格小于参数list的长度）。因为此方法固有的竞争条件(源
+     *    码实现也是取了一个 Snapshot(syncrhonized))，建议仅用于信息目的。
+     *
+     * 6，可通过 enumerate 获得当前活动线程的引用并对其进行操作。
+     *
+     * 7，允许线程访问有关自己的线程组的信息，使用 getThreadGroup() 方法。但不允许它访问有关其线程组的父线程组或其他任何线程组的信息。
+     *
+     * 8，线程组的某些方法，将对线程组机器所有子组的所有线程执行，如 ThreadGroup 的 interrupt()。
+     *
+     * 9，public class ThreadGroup implements Thread.UncaughtExceptionHandler，线程组类实现了 UncaughtExceptionHandler方法。即
+     *
+     *    当Thread因未捕获的异常而突然中止时,调用处理程序的接口.当某一线程因捕获的异常而即将中止时,JVM将使用UncaughtExceptionHandler
+     *    查询该线程以获得其 UncaughtExceptionHandler 的线程并调用处理程序的 uncaughtException 方法，将线程和异常作为参数传递。如
+     *    果某一线程为明确设置其 UncaughtExceptionHandler，则将它的 ThreadGroup 对象作为 UncaughtExceptionHandler。如果ThreadGroup
+     *    对象对处理异常没有特殊要求,可以将调用转发给 Thread 的 getDefaultUncaughtExceptionHandler() 方法。
+     *
+     * 10，线程是独立执行的代码片断，线程的问题应该由线程自己来解决，而不要委托到外部。基于这样的设计理念，在Java中，线程方法的异常
+     *   （无论是 checked 还是 unchecked exception），都应该在线程代码边界之内（run方法内）进行try catch并处理掉。换句话说，我们不能
+     *    捕获从线程中逃逸的异常。
+     *
+     * 11，参考 Thread 的 dispatchUncaughtException，该方法是一个私有方法，在异常逃逸时调用.判断线程自身是否设置了uncaughtExceptionHandler。
+     *    如果没有则直接返回group，即自己的所在的线程组，而线程组实现了UncaughtExceptionHandler接口。 Thread 的 getUncaughtExceptionHandler()。
+     *
+     */
+
+
     /**
      * 线程是操作系统中独立的个体，但这些个体如果不经过特殊处理就不能成为一个整体。线程间的通信就是成为整体的改用方案之一。这样系统
      * 之间的交互性会更强大，大大的提高 CPU 的利用率。
