@@ -1,4 +1,4 @@
-package zneedmerge;
+package demotest;
 
 /**
  * 如果每个线程执行的代码相同，可以使用同一个 Runnable 对象，这个 Runnable 对象中有那些共享数据。如果每个线程执行的代码不同，
