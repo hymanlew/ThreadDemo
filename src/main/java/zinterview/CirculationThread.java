@@ -2,7 +2,11 @@ package zinterview;
 
 /**
  * 题目要求：
+ * 共有子和父两个线程，要求子输出 1-10，父输出 1-50，子先执行然后父执行。然后再子先执行然后父执行，如果循环。
  *
+ * 等待/通知模式的交叉备份：
+ * 创建 20 个线程，其中 10 个将数据备份到 A 数据库，另外 10 个将数据备份到 B 数据库，并且备份时是 A,B 两个数据库
+ * 同时交叉进行的。
  */
 public class CirculationThread {
 
@@ -34,7 +38,7 @@ public class CirculationThread {
  * 并且锁是要加在线程访问的执行资源类的内部方法中，而不是加在线程代码中，以实现高类聚性。
  */
 class CircuDemo {
-    private boolean flag = true;
+    volatile private boolean flag = true;
 
     public synchronized void sub(){
         /**
