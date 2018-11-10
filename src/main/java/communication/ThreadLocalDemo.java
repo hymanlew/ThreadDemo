@@ -1,10 +1,11 @@
-package zneedmerge;
+package communication;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 /**
+ * ThreadLocal 中保存的数据，在多线程操作中的隔离性：
  * ThreadLocal，是用于实现线程范围内的数据共享，即对于相同的程序代码，多个模块在同一个线程中运行时要共享一份数据，而在另外线程中
  * 运行时又共享另外一份数据。即多个操作都需要在同一个事务中完成，通常也在同一个线程中处理。
  *
@@ -97,7 +98,6 @@ public class ThreadLocalDemo {
     }
 
     public static void t3(){
-        // 使用 ThreadLocal，在实现封装时，要注意不要让外界直接操作 ThreadLocal 变量。
         for(int i=0; i<2; i++){
             new Thread(new Runnable() {
                 @Override
@@ -114,7 +114,6 @@ public class ThreadLocalDemo {
     }
 
     public static void t4(){
-        // 使用 ThreadLocal，在实现封装时，要注意不要让外界直接操作 ThreadLocal 变量。
         for(int i=0; i<2; i++){
             new Thread(new Runnable() {
                 @Override
