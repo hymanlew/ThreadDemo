@@ -74,11 +74,10 @@ public class WaitDemo {
 
     public static void t4(){
         /**
-         * 由于有对象锁，所以在执行时两个线程不能同时运行，在编程时也就需要分出先后顺序了。
+         * 由于有对象锁，所以在执行时两个线程不能同时运行，在编程时也就需要分出先后顺序了，即不能过早地通知。
          * 并且发出通知后，也不会马上就结束 wait 状态。
          * 即，wait 被执行后，锁自动释放。但 notify 执行后，锁却不自动释放。必须 notify 手动 sleep 等待之后才可以。
          */
-        //
         testList list = new testList();
         Mya a = new Mya(list);
         a.start();
