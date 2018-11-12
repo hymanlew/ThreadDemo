@@ -85,5 +85,7 @@ public class Main {
      * 之间的交互性会更强大，大大的提高 CPU 的利用率。
      *
      * 读写锁：分读锁，写锁。读锁之间不互斥，写锁之间要互斥，读写锁之间要互斥。这是 JVM 控制的，只需加上对应的锁即可。
+     *
+     * Java里面内置锁 (synchronized) 和 Lock(ReentrantLock) 都是可重入的。
      */
 }
