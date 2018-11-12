@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="ThreadDemo:war">
-    <output-path>$PROJECT_DIR$/target</output-path>
-    <root id="archive" name="hyman.war">
-      <element id="artifact" artifact-name="ThreadDemo:war exploded" />
-    </root>
-  </artifact>
-</component>
