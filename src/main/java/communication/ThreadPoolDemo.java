@@ -1,4 +1,4 @@
-package zneedmerge;
+package communication;
 
 import java.util.Random;
 import java.util.concurrent.*;

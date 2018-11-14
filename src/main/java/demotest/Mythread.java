@@ -4,7 +4,15 @@ public class Mythread extends Thread{
     @Override
     public void run() {
         super.run();
-        System.out.println("自定义线程！");
+        System.out.println("自定义线程！=== 1");
+        for(int i=0; i<10; i++){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(i);
+        }
     }
 }
 
@@ -15,6 +23,22 @@ class MyRunable implements Runnable{
     }
 }
 
+class Thread2 extends Thread{
+    @Override
+    public void run() {
+        System.out.println("自定义线程！=== 2");
+        for(int i=0; i<10; i++){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(i);
+        }
+        super.run();
+
+    }
+}
 
 class test{
 
@@ -23,7 +47,6 @@ class test{
         mythread.start();
         System.out.println("运行结束！");
         System.out.println("=== 1 ====");
-        System.out.println("=== 2 ====");
     }
 
     public static void runable(){
@@ -32,12 +55,28 @@ class test{
         thread.start();
         System.out.println("运行结束！");
         System.out.println("=== 1 ====");
-        System.out.println("=== 2 ====");
+    }
+
+    public static void test(){
+        Mythread mythread = new Mythread();
+        mythread.start();
+        try {
+            Thread.sleep(12000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Thread2 thread2 = new Thread2();
+        thread2.start();
+        System.out.println("运行结束！");
     }
 
     public static void main(String[] args) {
-        thread();
-        runable();
+        //thread();
+        //runable();
+
+        // 此时的 super.run() 方法在前在后是没分别的，因为其实现就是调用 runnable 对象的 run 方法。但是现在是使用的继承的
+        // 方式创建的线程。
+        test();
     }
 }
 
