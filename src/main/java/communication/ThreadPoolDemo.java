@@ -1,4 +1,4 @@
-package zneedmerge;
+package communication;
 
 import java.util.Random;
 import java.util.concurrent.*;
@@ -11,17 +11,18 @@ public class ThreadPoolDemo {
 
     public static void t1(){
         // 固定线程数量的线程池
-        //ExecutorService pool = Executors.newFixedThreadPool(3);
+        ExecutorService pool = Executors.newFixedThreadPool(3);
 
         // 线程数量动态变化的缓存线程池
         //ExecutorService pool = Executors.newCachedThreadPool();
 
         // 单线程的线程池，其优点是始终会保持有一个活跃的线程在工作。即如果当前线程死掉，它就会重新创建一个新的线程来工作
-        ExecutorService pool = Executors.newSingleThreadExecutor();
+        //ExecutorService pool = Executors.newSingleThreadExecutor();
 
         for(int i=0; i<10; i++) {
             // 在子循环中调用私有变量，则此外部的私有变量需要声明为 final 的。
             final int task = i;
+            System.out.println(task+"==============");
             // 每执行一次，则代表线程池执行一次任务
             pool.execute(new Runnable() {
                 @Override
@@ -115,10 +116,10 @@ public class ThreadPoolDemo {
 
     public static void main(String[] args) {
         // 三种线程池的使用
-        //t1();
+        t1();
         // 线程池的定时器
         //t2();
         // 线程池的定时器
-        t3();
+        //t3();
     }
 }

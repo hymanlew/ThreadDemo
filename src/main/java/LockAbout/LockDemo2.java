@@ -1,4 +1,4 @@
-package zneedmerge;
+package LockAbout;
 
 /**
  * Java里面内置锁 (synchronized) 和 Lock(ReentrantLock) 都是可重入的。Reentrant /rintrent/：可重入的。
