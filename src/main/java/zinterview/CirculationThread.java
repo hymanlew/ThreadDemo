@@ -6,7 +6,7 @@ package zinterview;
  *
  * 等待/通知模式的交叉备份：
  * 创建 20 个线程，其中 10 个将数据备份到 A 数据库，另外 10 个将数据备份到 B 数据库，并且备份时是 A,B 两个数据库
- * 同时交叉进行的。
+ * 同时交叉进行的。即 A 一下，B 一下。
  */
 public class CirculationThread {
 

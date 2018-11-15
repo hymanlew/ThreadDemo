@@ -1,6 +1,7 @@
 package zinterview;
 
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -10,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 设计可缓冲队列，即设计一个缓冲区。一头接收数据，一头发送数据。
+ * 在 java 中实际上已经提供了这样一种缓冲队列，即 ArrayBlockingQueue。
  */
 public class BoundedBuffer {
     final Lock lock = new ReentrantLock();

@@ -6,9 +6,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * 题目要求：
- * 做一个缓存系统，
- *
+ * 题目要求：做一个缓存系统
  */
 public class CacheDemo {
 

@@ -1,5 +1,6 @@
 package zneedmerge;
 
+import java.util.Random;
 import java.util.concurrent.*;
 
 /**
@@ -15,6 +16,9 @@ import java.util.concurrent.*;
  *
  * CountDownLatch 倒计时计数器，调用其对象的 countDown 方法进行倒数计算。设定某一个业务只有当所有条件都满足后（计数为 0 后）才
  * 开始执行，当到达 0 后，则所有等待者或单个等待者开始执行。
+ *
+ * Exchanger，用于实现两个线程之间的数据交换。每个线程在完成一定的事务后想与对方交换数据时，则第一个先拿出数据的线程将一直等待
+ * 第二个线程拿着数据到来，才能彼此交换数据。
  */
 public class OtherDemo {
 
@@ -143,13 +147,51 @@ public class OtherDemo {
         }
     }
 
+    public static void t4(){
+        final Exchanger exchanger = new Exchanger();
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String data1 = "111";
+                    System.out.println(Thread.currentThread().getName()+"=要交换="+data1);
+                    // 设置为随机的时间，以模拟两个线程以不同的时间去交换数据时，等待的情况
+                    Thread.sleep(new Random().nextInt(2000));
+
+                    String data2 = (String) exchanger.exchange(data1);
+                    System.out.println(Thread.currentThread().getName()+"=换回="+data2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String data1 = "222";
+                    System.out.println(Thread.currentThread().getName()+"=要交换="+data1);
+                    // 设置为随机的时间，以模拟两个线程以不同的时间去交换数据时，等待的情况
+                    Thread.sleep(new Random().nextInt(2000));
+
+                    String data2 = (String) exchanger.exchange(data1);
+                    System.out.println(Thread.currentThread().getName()+"=换回="+data2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     public static void main(String[] args) {
         // Semaphore 信号灯
         //t1();
         // CyclicBarrier 循环条件路障
         //t2();
         // CountDownLatch 倒计时计数器
-        t3();
+        //t3();
+        // Exchanger 交换数据
+        t4();
 
         pool.shutdown();
     }
