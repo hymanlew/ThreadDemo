@@ -12,9 +12,8 @@ import java.util.concurrent.*;
  * offer，poll ==  如果可以添加（或取出）元素则返回 true（或元素），否则返回 false（或 null），但不抛异常。
  * put，take   ==  当队列已经满时（或空时），再加入（或取出）元素会发生阻塞，直到有空间可以添加进去（或有元素可以取出）。
  *
- *
- *
- *
+ * BlockingQueue 阻塞队列与 Semaphore 信号灯有些相似，但也不同，阻塞队列是一方存数据，另一方释放数据。Semaphore 通常是由同一
+ * 方设置和释放信号量。
  */
 public class QueueDemo {
 
@@ -104,13 +103,15 @@ class DataDemo {
      */
     {
         try {
+            System.out.println("== 匿名构造方法 ==");
             queue2.put(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public synchronized void sub(){
+    // 当使用阻塞队列之后，就不再需要同步锁 synchronized 了，因为它会造成假死，即 queue 阻塞之后，同步锁又锁住。则程序就会一直等待。
+    public void sub(){
         try {
             queue1.put(1);
             for(int i=1; i<11 ;i++){
@@ -123,7 +124,7 @@ class DataDemo {
         }
     }
 
-    public synchronized void maind(){
+    public void maind(){
         try {
             queue2.put(1);
             for (int i = 1; i < 51; i++) {
