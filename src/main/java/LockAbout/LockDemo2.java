@@ -266,7 +266,6 @@ public class LockDemo2 {
     }
 
 
-
     public static void main(String[] args) {
         // getHolddCount() == 查询当前线程保持锁定的个数，即调用 lock 方法的次数
         //t1();
@@ -286,7 +285,7 @@ public class LockDemo2 {
         //t8();
         // awaitUninterruptibly() == 该方法强制当前线程忽略中断命令，而是继续正常执行。
         //t9();
-        // awaitUninterruptibly() == 该方法强制当前线程忽略中断命令，而是继续正常执行。
+        // awaitUntil() == 使得当前线程阻塞指定的时间之后（从当前时间开始算），再继续执行。并且它允许被其他线程提前唤醒。
         t10();
 
         pool.shutdown();

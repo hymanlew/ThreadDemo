@@ -181,7 +181,8 @@ public class ThreadPoolDemo {
          * scheduleAtFixedRate（调用 runnable 对象执行任务，间隔时间，之后间隔的时间，时间单位），该方法会在指定的时间之后
          * 执行一次，然后再按照指定的时间间隔有频率的执行。
          */
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(3);
+        //ScheduledExecutorService service = Executors.newScheduledThreadPool(3);
+        ScheduledExecutorService service = new ScheduledThreadPoolExecutor(3);
         service.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
