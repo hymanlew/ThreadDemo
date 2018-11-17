@@ -1,8 +1,7 @@
 package LockAbout;
 
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -32,18 +31,23 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 法，而调用后，当前线程将缩放锁。
  *
  *
- * 读写锁：分读锁，写锁。读锁之间不互斥，写锁之间要互斥，读写锁之间要互斥。这是 JVM 控制的，只需加上对应的锁即可。
+ * ReentrantLock 具有完全互斥排他的效果，即同一时间只有一个线程在执行 lock 方法后面的任务。但这样虽然保证了实例变量的线程安全性
+ * ，效率却是非常低下的。所以 JDK 提供了读写锁 ReentrantReadWriteLock 类，用于加快运行效率。
+ * 读写锁：分读锁（也称为共享锁），写锁（也称为排他锁）。即读锁之间不互斥，写锁之间要互斥，读写锁之间要互斥。这是 JVM 控制的，只
+ * 需加上对应的锁即可。
  */
 public class LockDemo {
 
     public static void t1(){
-        ExecutorService service = Executors.newFixedThreadPool(2);
+        ExecutorService service = new ThreadPoolExecutor(2,2,0, TimeUnit.SECONDS,new LinkedBlockingQueue<>());
         OutPutter putter = new OutPutter();
 
         service.execute(new Runnable() {
             @Override
             public void run() {
+                // 非线程安全，没有使用锁
                 //putter.put3("aaaaaaaa");
+                // 线程安全，lock 锁就是锁定了当前对象
                 putter.putlock("aaaaaaaa");
             }
         });
@@ -66,36 +70,50 @@ public class LockDemo {
 
     public static void t2(){
         final ReadWrite readWrite = new ReadWrite();
-        ExecutorService service = Executors.newFixedThreadPool(3);
+        ExecutorService service = new ThreadPoolExecutor(3,3,0, TimeUnit.SECONDS,new LinkedBlockingQueue<>());
 
-        service.execute(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
-                    try {
-                        // 在测试时，编写读与存程序的间隔时间不要相同，因为这样就会人为的使线程之间有秩序的互相读写值了。
-                        Thread.sleep(500);
-                        readWrite.get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        for(int i=0; i<3; i++){
+            service.execute(new Runnable() {
+                @Override
+                public void run() {
+                    while (true){
+                        // 测试读锁不互斥
+                        //readWrite.get();
+                        // 测试写锁互斥
+                        readWrite.put(1);
                     }
                 }
-            }
-        });
-        service.execute(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
-                    try {
-                        // 在测试时，编写读与存程序的间隔时间不要相同，因为这样就会人为的使线程之间有秩序的互相读写值了。
-                        Thread.sleep(4000);
-                        readWrite.put(new Random().nextInt(10));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+            });
+        }
+
+        //service.execute(new Runnable() {
+        //    @Override
+        //    public void run() {
+        //        while (true){
+        //            try {
+        //                // 在测试时，编写读与存程序的间隔时间不要相同，因为这样就会人为的使线程之间有秩序的互相读写值了。
+        //                Thread.sleep(500);
+        //                readWrite.get();
+        //            } catch (InterruptedException e) {
+        //                e.printStackTrace();
+        //            }
+        //        }
+        //    }
+        //});
+        //service.execute(new Runnable() {
+        //    @Override
+        //    public void run() {
+        //        while (true){
+        //            try {
+        //                // 在测试时，编写读与存程序的间隔时间不要相同，因为这样就会人为的使线程之间有秩序的互相读写值了。
+        //                Thread.sleep(4000);
+        //                readWrite.put(new Random().nextInt(10));
+        //            } catch (InterruptedException e) {
+        //                e.printStackTrace();
+        //            }
+        //        }
+        //    }
+        //});
         service.shutdown();
     }
 
@@ -163,8 +181,8 @@ class ReadWrite {
     private Object data = null;
 
     // 不用使用自定义的锁对象，即自定义的监视器对象，因为这会锁住整个对象。而不能达到连续读的效果。
-    // lock 这里是可重入锁。但当有很多线程都从某个数据结构中读取数据而很少有线程对其进行修改时，rwlock 就很有用了。在这种情况下，
-    // 允许读取器线程共享访问是合适的。当然，写入器线程依然必须是互斥访问的。
+    // lock 这里是可重入锁，是完全排他的。但当有很多线程都从某个数据结构中读取数据而很少有线程对其进行修改时，rwlock 就很有用了。
+    // 在这种情况下，允许读取器线程共享访问是合适的。当然，写入器线程依然必须是互斥访问的。
     private Lock lock = new ReentrantLock();
     private ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
 
