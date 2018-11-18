@@ -15,6 +15,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  *
  * TimerTask 是以队列的方式一个一个被顺序执行的，所以执行的时间有可能和预期的时间不一致。因为前面的任务有可能消耗的时间较长，
  * 则后面的任务运行的时间也会被延迟。
+ *
+ * 另外也有专门的开源定时任务框架，quartz。在具体的项目中大型复杂的业务也是使用这种框架的。
  */
 public class TimerDemo {
     /**
@@ -114,13 +116,20 @@ public class TimerDemo {
         timer.scheduleAtFixedRate(mytask,2000,2000);
     }
 
+    public static void t5(){
+        // 子母循环定时器，并设置不同等待时间
+        timer.schedule(new Mytask4(),2000);
+    }
+
     public static void main(String[] args) {
         // timer 执行任务
         //t1();
         // timer 允许执行多个任务
         //t2();
         // timer 清除自身的任务
-        t3();
+        //t3();
+        // 子母循环定时器
+        t5();
     }
 }
 
@@ -144,5 +153,20 @@ class Mytask3 extends TimerTask {
         System.out.println("定时任务 3 开始 == "+new Date());
         // TimerTask 的 cancel 方法的作用是将自身从任务队列中清除，但其他任务不受影响。
         this.cancel();
+    }
+}
+
+class Mytask4 extends TimerTask {
+    static int count = 0;
+    @Override
+    public void run() {
+        count = (count+1)%2;
+        if(count == 1){
+            System.out.println("母定时开始 == "+new Date());
+        }else {
+            System.out.println("子定时开始 == "+new Date());
+        }
+
+        new Timer().schedule(new Mytask4(),2000+2000*count);
     }
 }
