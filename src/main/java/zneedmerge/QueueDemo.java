@@ -14,6 +14,11 @@ import java.util.concurrent.*;
  *
  * BlockingQueue 阻塞队列与 Semaphore 信号灯有些相似，但也不同，阻塞队列是一方存数据，另一方释放数据。Semaphore 通常是由同一
  * 方设置和释放信号量。
+ *
+ * 它与 List集合也是类似的，可以看作是 list 集合的增强版。因为其底层也是数组（Arraylist，ArrayBlockingQueue）或是链表：
+ * LinkedList，使用了双向链表，并且其容量理论上是无限的。而 LinkedBlockingQueue 是单向链表，容量上也是有限的，int 最大值。
+ * 并且 BlockingQueue 相比 List有以上 6 种方法的特点（即是可阻塞的），而且可以保证线程安全（使用了 ReentrantLock 锁机制）及
+ * FIFO（设为公平锁）的业务。而 list 是没有的。
  */
 public class QueueDemo {
 

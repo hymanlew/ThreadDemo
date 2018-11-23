@@ -1,5 +1,7 @@
 package instruct;
 
+import java.util.Arrays;
+
 public class Main {
     /**
      * Thread 类实现了 Runnable 接口，它们之间具有多态关系。并且为了支持多继承，可以一边实现 thread类一边实现 runable 接口。
@@ -88,4 +90,40 @@ public class Main {
      *
      * Java里面内置锁 (synchronized) 和 Lock(ReentrantLock) 都是可重入的。
      */
+
+    public static void main(String[] args) {
+        /**
+         * 冒泡排序是从左到右，依次两两比对，直到最后把需要的值放到最后。
+         * 然后再循环经过两两比对，直到最后把需要的值放到上一次值的前一位（即 length-i-1）。
+         * 最后完成 length-1 次的比对，即可拿到想要的值。
+         */
+        int[] nums = {1,5,9,6,4,2,3};
+
+        for(int i=0; i<nums.length; i++){
+            for(int k=0; k<nums.length-i-1; k++){
+                if(nums[k]>nums[k+1]){
+                    int a = nums[k+1];
+                    nums[k+1] = nums[k];
+                    nums[k] = a;
+                }
+            }
+        }
+        System.out.println(Arrays.toString(nums));
+
+        /**
+         * 冒泡排序是从左到右，把拿到的数与其后面所有的数依次比对，直到最后把需要的值放到最前面。
+         * 然后再循环比对所有的数，及依次比对其后面的数，最后把需要的值放到上一次值的后一位（即 length-i-1）。
+         * 最后完成 length-1 次的比对，即可拿到想要的值。
+         */
+        for(int i=0; i<nums.length; i++){
+            for(int k=i+1; k<nums.length-i-1; k++){
+                if(nums[i]>nums[k]){
+                    int a = nums[k];
+                    nums[k] = nums[i];
+                    nums[i] = a;
+                }
+            }
+        }
+        System.out.println(Arrays.toString(nums));
+    }
 }
