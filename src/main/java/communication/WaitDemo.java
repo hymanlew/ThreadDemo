@@ -170,6 +170,7 @@ class Mya extends Thread{
         this.test = test;
     }
 
+    /**
     //@Override
     //public void run() {
     //    /**
@@ -188,7 +189,7 @@ class Mya extends Thread{
     //    } catch (InterruptedException e) {
     //        e.printStackTrace();
     //    }
-    //}
+    //}*/
 
     @Override
     public void run() {

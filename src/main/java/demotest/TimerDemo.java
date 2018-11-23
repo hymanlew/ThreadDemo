@@ -98,10 +98,10 @@ public class TimerDemo {
         Date date = new Date();
 
         // 该方法的作用是以当前时间为基础，延迟指定的毫秒数后执行一次。
-        timer.schedule(mytask,2000);
+        //timer.schedule(mytask,2000);
 
         // 该方法的作用是以当前时间为基础，延迟指定的毫秒数后，再以指定的间隔时间无限次的执行某一任务。
-        timer.schedule(mytask,2000,2000);
+        //timer.schedule(mytask,2000,2000);
 
         /**
          * 该方法与 schedule 方法都会按顺序执行，所以不用考虑非线程安全的问题。这两个方法主要的区别只在于不延时的情况：
@@ -111,7 +111,22 @@ public class TimerDemo {
          *
          * 延时的情况则没有区别，就是两个方法如果执行任务时被延时，则下一次任务的执行时间参考的是上一次任务的 ‘结束’ 时间来计算的。
          */
-        timer.scheduleAtFixedRate(mytask,2000,2000);
+        //timer.scheduleAtFixedRate(mytask,2000,2000);
+
+        /**
+         * 另外 scheduleAtFixedRate 方法具有追赶执行性。即如果执行任务的计划时间早于当前时间，则任务会立即执行，并且会把与当前
+         * 时间段内对应的 tash 任务补充性地执行（是一次性全部执行，并不会有间隔时间），然后再接着按正常程序执行。
+         *
+         * 而 schedule 方法就不具有追赶执行性，即它只会从当前时间开始按正常程序执行。
+         */
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String dates = "2018-11-19 17:04:10";
+            date = format.parse(dates);
+            timer.scheduleAtFixedRate(mytask,date,2000);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
@@ -120,7 +135,9 @@ public class TimerDemo {
         // timer 允许执行多个任务
         //t2();
         // timer 清除自身的任务
-        t3();
+        //t3();
+        // timer 清除自身的任务
+        t4();
     }
 }
 
