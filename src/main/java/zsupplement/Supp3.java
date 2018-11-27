@@ -46,7 +46,9 @@ public class Supp3 {
     public static void t3(){
         /**
          * 从本方法的运行结果来看，在默认情况下，线程组中的一个线程出现异常并不会影响其他线程正常的运行。
-         * 所以如果要达到一个线程出异常，则当前组中的线程全部停止的效果，就要自定义一个线程组，
+         * 所以如果要达到一个线程出异常，则当前组中的线程全部停止的效果，就要自定义一个线程组，并重写 uncaughtException 方法
+         * 处理组内线程的中断行为。但需要注意的是，组内每个线程对象中的 run 方法内部不能有异常的 catch 语句，否则重写的方法不
+         * 会执行。
          */
         //ThreadGroup group = new ThreadGroup("self-group");
         MyGroup group = new MyGroup("self-group");
@@ -66,10 +68,26 @@ public class Supp3 {
         thread.start();
     }
 
+    public static void t4(){
+        // 组合所有的异常处理方式，察看结果
+        SThread5 thread = new SThread5();
+
+        //thread.setUncaughtExceptionHandler(new ObjectUncaughtExceptionHandler());
+        SThread5.setDefaultUncaughtExceptionHandler(new StateUncaughtExceptionHandler());
+        thread.start();
+
+        MyGroup group = new MyGroup("self-group");
+        SThread6 thread2 = new SThread6(group,"报错线程=","a");
+        //thread2.setUncaughtExceptionHandler(new ObjectUncaughtExceptionHandler());
+        //SThread6.setDefaultUncaughtExceptionHandler(new StateUncaughtExceptionHandler());
+        thread2.start();
+    }
+
     public static void main(String[] args) {
         //t1();
         //t2();
-        t3();
+        //t3();
+        t4();
     }
 }
 
@@ -122,9 +140,31 @@ class MyGroup extends ThreadGroup {
         super(name);
     }
 
+    //@Override
+    //public void uncaughtException(Thread t, Throwable e) {
+    //    super.uncaughtException(t, e);
+    //    this.interrupt();
+    //}
+
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         super.uncaughtException(t, e);
-        this.interrupt();
+        System.out.println("线程组的异常处理 ===");
+    }
+}
+
+class ObjectUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        System.out.println("线程对象的异常处理 ===");
+        e.printStackTrace();
+    }
+}
+
+class StateUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        System.out.println("静态的异常处理 ===");
+        e.printStackTrace();
     }
 }
