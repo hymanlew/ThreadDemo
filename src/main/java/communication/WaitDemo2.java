@@ -11,7 +11,7 @@ import java.util.List;
  * 如果在此例中，设计出多个生产者和消费者，那么在运行中极有可能出现 ‘假死’ 的情况。
  *
  * 假死，其实就是所有的线程都进入 wait 等待状态，程序不再执行任何业务，整个项目呈停止状态。这在使用生产者，消费者模式时经常遇到。
- * 这是因为虽然使用了 wait/notify 进行了通信，但由于多个同类之间是异步执行，并不能保证 notify 唤醒的一定是异类。也行是同类，比
+ * 这是因为虽然使用了 wait/notify 进行了通信，但由于多个同类之间是异步执行，并不能保证 notify 唤醒的一定是异类。也许是同类，比
  * 如 ‘生产者’ 唤醒 ‘生产者’，‘消费者’ 唤醒 ‘消费者’。而按照这种情况运行的比率积少成多，就会导致所有的线程都不能继续运行下去，大
  * 家都在等待，都呈 wait 状态，程序最后也就会是假死状态。
  *
@@ -96,9 +96,9 @@ public class WaitDemo2 {
         }
         /**
          * 表示当前线程组中活跃的线程数，如果该线程组已停止运行，则 getThreadGroup 就无线程组就返回 null，线程数为 0。
-         * 其 activeCount/activeCount/enumerate 方法均为不精确的统计，建议仅用于信息目的。
+         * 其 activeCount/enumerate 方法均为不精确的统计，建议仅用于信息目的。
          *
-         * enumerate 方法，用于获得当前活动线程的引用并对其进行操作。将此线程组即其子组中的所有活动线程复制到指定数组中。
+         * enumerate 方法，用于获得当前活动线程的引用并对其进行操作。将指定的线程组及其子组中的所有活动线程复制到指定数组中。
          */
         Thread[] tarray = new Thread[Thread.currentThread().getThreadGroup().activeCount()];
         Thread.currentThread().getThreadGroup().enumerate(tarray);

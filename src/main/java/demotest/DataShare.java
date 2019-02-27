@@ -49,6 +49,7 @@ public class DataShare {
      * 使用Thread.currentThread().getName() 和使用 this.getName()和 对象实例.getName(),都可以得到线程的名称，但是使用 this
      * 调用 getName()方法只能在本类中，而不能在其他类中，更不能在Runnable接口中。所以在实现接口的方式中，只能使用 Thread.currentThread().getName()
      * 获取线程的名称，否则会出现编译时异常。
+     * 因为实现 runnable 的方式创建的线程，则只有一个线程组名，不会有其他子线程。不能调用 this。
      *
      * Thread.currentThread().getName()，对象实例.getName() 和 this.getName(）区别：
      * 在继承 Thread的 run方法中使用 this.getName 和在外部调用对象.getName 或者 Thread.currentThread().getName，所得出的
@@ -58,20 +59,20 @@ public class DataShare {
      * 2.如果是直接new 一个自定义对象不交给 Thread线程执行调用，在其内部外部使用 Thread.currentThread().getName()，对象实
      * 例.getName() 和 this.getName(），这3个区别都不存在，都是相同的。因为没有交给 Thread执行，而是直接调用的当前实例本身。
      *
-     * 首先要清楚 a 和 threadName 是两个完全不同的对象，他俩之间唯一的关系就是把 t 传递给 a 对象仅仅是为了让 a 调用 t 对象的
-     * run方法。在run方法中，调用 this.getName 获取的是当前具体执行的线程 name（即 t），而 Thread.currentThread().getName
-     * 拿到的是当前的外部主线程（即主调用线程）的 name。所以 currentThread().getName 与外部的 a.getName 名称相同。
+     * 首先要清楚 a（implements Runnable）对象和 t（new thread）对象是两个完全不同的对象，他俩之间唯一的关系就是把 t 传递给 a
+     * 对象仅仅是为了让 a 调用 t 对象的 run方法。在构造方法中，Thread.currentThread().getName() 为主线程（main），在run方法中，
+     * Thread.currentThread().getName() 获取的是当前具体执行的线程 name（即外部的 t），即它与外部的 a.getName 名称相同。
      *
-     * 正常的话按道理来说，对象继承父类 this也应该实例的，set的话也是可以设置到父类中的，重点还是要清楚 a 和 t 是两个完全不同
+     * 正常按道理来说，对象继承父类 this也应该实例的，t.setname 也是可以设置到父类中的，重点还是要清楚 a 和 t 是两个完全不同
      * 的对象，他俩之间唯一的关系就是把 t 传递给 a 对象仅仅是为了让 a 调用 t 对象的run方法。
      *
-     * 综上所述，调用线程如果是 Thread继承的方式，外部使用 Thread.currentThread().getName 或者 对象实例.getName()，内部使用
-     * Thread.currentThread().getName 就不会出现获取不一致的问题。同样的此问题也适用于 a.isAlive()
-     * 而如果是实现 runnable 的方式创建的线程，则只有一个线程组名，不会有其他子线程。也不能调用 this。
+     * 但如果调用线程是 Thread继承的方式 a（extend thread），在构造方法中 Thread.currentThread().getName() 为主线程（main），
+     * this.getName() 为Thread-0。在run方法中 Thread.currentThread().getName() 获取的是当前具体执行的线程 name（即外部的 t），
+     * this.getName() 仍然为Thread-0（因为是主线程调用执行的当前线程）。外部对象实例.getName() 为 t，外部的 Thread.currentThread()
+     * .getName 为 main（因为是主线程调用执行的当前线程）。
      *
-     *
-     * sleep 方法的作用是在指定的毫秒内让当前 ”正在执行的线程“ 休眠暂停执行，这个正在执行的是指 this.currentThread，即它是与
-     * 外部主线程异步执行的。休眠的是 this 指定的线程。
+     * sleep 方法的作用是在指定的毫秒内让当前 ”正在执行的线程“ 休眠暂停执行，这个正在执行的是指 Thread.currentThread().getName()，
+     * 即它是与外部主线程异步执行的。休眠的是 Thread.currentThread().getName() 指定的线程。
      */
     public static void main(String[] args) {
         // 变量不共享，各自计算各自的。
@@ -136,6 +137,12 @@ class ThreadName extends Thread{
     public void run() {
         System.out.println("重写方法执行 ==");
         System.out.println("current_name == "+Thread.currentThread().getName());
+        try {
+            System.out.println("==================");
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.println("this_name == "+this.getName());
         System.out.println("重写存活 == "+this.isAlive());
         System.out.println("重写结束 ==");
@@ -154,6 +161,12 @@ class TName implements Runnable{
     public void run() {
         System.out.println("重写方法执行==");
         System.out.println("重写线程=="+Thread.currentThread().getName());
+        try {
+            System.out.println("==================");
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         //System.out.println("重写getname=="+this.getName());
         System.out.println("重写结束==");
     }

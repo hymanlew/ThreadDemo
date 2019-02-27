@@ -38,7 +38,7 @@ public class ThreadLocalDemo2 {
 
     public static void t2(){
         /**
-         * 使用 InheritableThreadLocal 类时，即使是在多线程操作中，子线程也会从父线程中继承值。而不会重新获得值。
+         * 使用 InheritableThreadLocal 类时，即使是在多线程操作中，子线程也会从父线程中继承值。而不会重新获得值。这就是该类的作用。
          * 但需要注意一点，如果子线程在取得值的同时，主线程将 InheritableThreadLocal 中的值进行修改后，那么子线程取到的还是
          * 旧的值。注意，是同时执行时。
          */

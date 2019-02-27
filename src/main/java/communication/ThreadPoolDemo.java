@@ -59,8 +59,8 @@ import java.util.concurrent.*;
  *
  *
  * 说明：Executors各个方法的弊端：
- * 1）newFixedThreadPool 和 newSingleThreadExecutor：核心线程数 = 最大线程数，但因为其默认队列大小是整数的最大值，所以如果
- *    过多堆积的请求处理，队列可能会耗费非常大的内存，甚至OOM。。
+ * 1）newFixedThreadPool（固定线程） 和 newSingleThreadExecutor（单线程）：核心线程数 = 最大线程数，但因为其默认队列大小是
+ *    整数的最大值，所以如果过多堆积的请求处理，队列可能会耗费非常大的内存，甚至OOM。
  * 2）newCachedThreadPool 和 newScheduledThreadPool：因为线程数最大数是Integer.MAX_VALUE，可能会创建数量非常多的线程，甚至OOM。
  *
  */
