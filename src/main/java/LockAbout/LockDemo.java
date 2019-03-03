@@ -27,8 +27,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *
  * unlock()：执行此方法时, 当前线程将释放持有的锁. 锁只能由持有者释放, 如果线程并不持有锁, 却执行该方法, 可能导致异常的发生。
  *
- * Condition newCondition()：条件对象，获取等待通知组件。该组件和当前的锁绑定，当前线程只有获取了锁，才能调用该组件的await()方
- * 法，而调用后，当前线程将缩放锁。
+ * Condition newCondition()：条件对象，是获取等待通知的对象。该对象和当前的锁绑定，当前线程只有获取了锁，才能调用该对象的 await()
+ * 方法，而调用后，当前线程将释放锁。
  *
  *
  * ReentrantLock 具有完全互斥排他的效果，即同一时间只有一个线程在执行 lock 方法后面的任务。但这样虽然保证了实例变量的线程安全性
@@ -180,7 +180,7 @@ class OutPutter {
 class ReadWrite {
     private Object data = null;
 
-    // 不用使用自定义的锁对象，即自定义的监视器对象，因为这会锁住整个对象。而不能达到连续读的效果。
+    // 不能使用自定义的锁对象，即自定义的监视器对象，因为这会锁住整个对象。而不能达到连续读的效果。
     // lock 这里是可重入锁，是完全排他的。但当有很多线程都从某个数据结构中读取数据而很少有线程对其进行修改时，rwlock 就很有用了。
     // 在这种情况下，允许读取器线程共享访问是合适的。当然，写入器线程依然必须是互斥访问的。
     private Lock lock = new ReentrantLock();

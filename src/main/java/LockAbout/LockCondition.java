@@ -17,7 +17,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * 它使用await()替换wait()，用signal()替换notify()，用signalAll()替换notifyAll()，传统线程的通信方式，Condition都可以实现，
  * 要注意 Condition是被绑定到Lock上的，要创建一个Lock的Condition必须用newCondition()方法。
  * await() == wait()，await(long,timeUnit) == wait(long)，signal() == notify()，signalAll() == notifyAll()，
- * 要注意 Condition是被绑定到Lock上的，要创建一个Lock的Condition必须用newCondition()方法。
  * 在使用 notify 或 notifyall 进行通知时，被通知的线程都是 JVM 随机选择的，但是 Condition 可以实现选择性通知。并且是它默认提供的。
  *
  * Condition的强大之处在于，对于一个锁，我们可以为多个线程间建立不同的Condition（即对象监视器），即可以设置多路等待和通知。线

@@ -14,12 +14,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * 传统方式下用 Collections 工具类提供的 synchronizedCollection 方法来获得同步集合。
  *
  * java.util.concurrent 包下的并发集合有五种：
- * concurrentHashMap：类似于 HashMap，区别就在于它是线程安全的。读读不互斥，读写，写写互斥。
+ * ConcurrentHashMap：类似于 HashMap，区别就在于它是线程安全的。读读不互斥，读写，写写互斥。
  * ConcurrentSkipListMap：它是一个可排序的 map，使用时需要传入一个比较器。
  * ConcurrentSkipListSet：类似于 HashSet，区别就在于它是线程安全的。读读不互斥，读写，写写互斥。
  *
- * CopyOnWriteArrayList：
- * CopyOnWriteArraySet：，。
+ * CopyOnWriteArrayList, CopyOnWriteArraySet。
  *
  */
 public class SynCollections {

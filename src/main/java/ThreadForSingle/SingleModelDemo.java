@@ -74,6 +74,8 @@ public class SingleModelDemo implements Serializable{
      *
      * 解决的办法就是在反序列化中使用 readResolve 方法（只要实现了序列化接口，并定义了序列化号，它就会自动调用。如果没有实现接
      * 口并且又声明了 readResolve 方法，则会抛出异常）。
+     * 这是因为 JDK 序列化操作提供了一个很特别的钩子（hook），类中具有一个私有的被实例化的方法 readresolve()，这个方法可以确保
+     * 单例的实现对象在序列化时仍然是单例的。
      */
     private static final long serialUID = 888L;
     protected Object readResolve(){

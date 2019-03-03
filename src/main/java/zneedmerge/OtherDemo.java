@@ -187,11 +187,11 @@ public class OtherDemo {
         // Semaphore 信号灯
         //t1();
         // CyclicBarrier 循环条件路障
-        //t2();
+        t2();
         // CountDownLatch 倒计时计数器
         //t3();
         // Exchanger 交换数据
-        t4();
+        //t4();
 
         pool.shutdown();
     }

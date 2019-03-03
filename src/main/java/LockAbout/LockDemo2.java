@@ -2,8 +2,12 @@ package LockAbout;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -15,17 +19,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * 2）synchronized在发生异常时，会自动释放线程占有的锁，因此不会导致死锁现象发生；而Lock在发生异常时，如果没有主动通过 unLock()
  * 去释放锁，则很可能造成死锁现象，因此使用Lock时需要在finally块中释放锁；
  *
- * 3）Lock可以让等待锁的线程响应中断，而synchronized却不行，使用synchronized时，等待的线程会一直等待下去，不能够响应中断；
+ * 3）Lock可以让等待锁的线程响应中断，即当当前线程被 interrupt 后，它也不会抛出异常而是正常结束，最后释放锁。而synchronized却不行，
+ * 使用synchronized时，等待的线程会一直等待下去，不能够响应中断；而当等待的线程获得锁后，如果该线程已经被中断了，那它就会抛出中断异常：
+ * java.lang.InterruptedException: sleep interrupted。
  *
  * 4）通过Lock可以知道有没有成功获取锁，而synchronized却无法办到。
  *
  * 5）Lock可以提高多个线程进行读操作的效率，具有嗅探锁定，多路分支通知等功能，而且使用上也更加灵活。
- *
- * 总结：ReentrantLock相比synchronized，增加了一些高级的功能。但也有一定缺陷。在ReentrantLock类中定义了很多方法（在 tn 方法中），比如：
- * isFair()        //判断锁是否是公平锁
- * isLocked()    //判断锁是否被任何线程获取了
- * isHeldByCurrentThread()   //判断锁是否被当前线程获取了
- * hasQueuedThreads()   //判断是否有线程在等待该锁
  *
  *
  * 两者在锁的相关概念上区别：
@@ -64,6 +64,19 @@ import java.util.concurrent.locks.ReentrantLock;
  * 发生了变化，对synchronize加入了很多优化措施，有自适应自旋，锁消除，锁粗化，轻量级锁，偏向锁等等。导致在JDK1.6上synchronize的
  * 性能并不比Lock差。官方也表示，他们也更支持synchronize，在未来的版本中还有优化余地，所以还是提倡在synchronized能实现需求的情况
  * 下，优先考虑使用synchronized来进行同步。
+ *
+ *
+ * Reentrantlock 的优点：
+ * 可以添加多个检控条件（condition）, 而 synchronized 则只能使用一个。使用 Reentrantlock 可以有多个wait()/notify() 队列。即直接多
+ * new 几个 ReentrantLock就可以了,不同的场景/条件用不同的 ReentrantLock。
+ * 可以控制线程得到锁的顺序,也就是有公平锁(按照进入顺序得到资源),也可以不按照顺就像.synchronized 一样。
+ * 可以查看锁的状态, 锁是否被锁上了。
+ * 可以查看当前有多少线程再等待锁。
+ *
+ * Reentrantlock 的缺点：
+ * 需要使用 import 引入相关的Class。
+ * 不能忘记在finally 模块释放锁,这个看起来比synchronized 丑陋。
+ * synchronized 可以放在方法的定义里面, 而 reentrantlock只能放在块里面. 比较起来, synchronized可以减少嵌套
  */
 public class LockDemo2 {
 
@@ -280,13 +293,13 @@ public class LockDemo2 {
         // isHeldByCurrentThread() == 判断锁是否被当前线程获取了
         //t6();
         // lockInterruptibly() == 如果当前线程未被中断，则获取锁定。如果已被中断则出现异常。
-        //t7();
+        t7();
         // trylock() == 仅在调用时检查该锁对象未被另一个线程锁定的情况下，才获取锁定对象加锁。
         //t8();
         // awaitUninterruptibly() == 该方法强制当前线程忽略中断命令，而是继续正常执行。
         //t9();
         // awaitUntil() == 使得当前线程阻塞指定的时间之后（从当前时间开始算），再继续执行。并且它允许被其他线程提前唤醒。
-        t10();
+        //t10();
 
         pool.shutdown();
     }
@@ -385,21 +398,47 @@ class Tservice {
     public void method5(){
         /**
          * Lock() 方法可以让等待锁的线程响应中断，即当当前线程被 interrupt 后，它也不会抛出异常而是正常结束，最后释放锁。
-         * 而synchronized却不行，使用synchronized时，等待的线程会一直等待下去，不能够响应中断；
+         * 而synchronized却不行，使用synchronized时，等待的线程会一直等待下去，不能够响应中断；而当等待的线程获得锁后，如果该
+         * 线程已经被中断了，那它就会抛出中断异常：java.lang.InterruptedException: sleep interrupted。
          *
          * lockInterruptibly() == 如果当前线程未被中断，则获取锁定。如果已被中断则出现异常。
          */
+        //try {
+        //    //lock.lock();
+        //    lock.lockInterruptibly();
+        //    System.out.println("lock begin = "+Thread.currentThread().getName());
+        //    // 不断的创建对象
+        //    for(int i=0; i<10000000; i++){
+        //        String s = new String();
+        //        Math.random();
+        //        //System.out.println("-----");
+        //    }
+        //    System.out.println("lock end = "+Thread.currentThread().getName());
+        //}catch (Exception e){
+        //    e.printStackTrace();
+        //    // 只有自定义异常并输出信息时，才能 get 到 message。并且以下方式都不能得到想要的信息
+        //    System.out.println("exception1 == "+e.getMessage());
+        //    System.out.println("exception2 == "+e.getCause());
+        //    System.out.println("exception3 == "+e.getStackTrace());
+        //    System.out.println("exception4 == "+System.err);
+        //}finally {
+        //    if(lock.isHeldByCurrentThread()){
+        //        lock.unlock();
+        //    }
+        //}
+
+
         try {
-            //lock.lock();
-            lock.lockInterruptibly();
-            System.out.println("lock begin = "+Thread.currentThread().getName());
-            // 不断的创建对象
-            for(int i=0; i<10000000; i++){
-                String s = new String();
-                Math.random();
-                //System.out.println("-----");
+            synchronized (lock){
+                System.out.println("lock begin = "+Thread.currentThread().getName());
+                // 不断的创建对象
+                for(int i=0; i<5; i++){
+                  Thread.sleep(500);
+                  System.out.println(i+"-----");
+                }
+                System.out.println("lock end = "+Thread.currentThread().getName());
             }
-            System.out.println("lock end = "+Thread.currentThread().getName());
+
         }catch (Exception e){
             e.printStackTrace();
             // 只有自定义异常并输出信息时，才能 get 到 message。并且以下方式都不能得到想要的信息
@@ -407,10 +446,6 @@ class Tservice {
             System.out.println("exception2 == "+e.getCause());
             System.out.println("exception3 == "+e.getStackTrace());
             System.out.println("exception4 == "+System.err);
-        }finally {
-            if(lock.isHeldByCurrentThread()){
-                lock.unlock();
-            }
         }
     }
 
