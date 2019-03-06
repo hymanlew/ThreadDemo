@@ -195,4 +195,28 @@ public class OtherDemo {
 
         pool.shutdown();
     }
+
+    /**
+     * CountDownLatch 和 CyclicBarrier 的区别？
+     *
+     * CyclicBarrier 它允许一组线程互相等待，直到到达某个公共屏障点 (Common Barrier Point)。因为该 Barrier 在释放等待线程后
+     * 可以重用，所以称它为循环 ( Cyclic ) 的 屏障 ( Barrier ) 。
+     * 每个线程调用 await() 方法，告诉 CyclicBarrier 我已经到达了屏障，然后当前线程被阻塞。当所有线程都到达了屏障，结束阻塞，
+     * 所有线程可继续执行后续逻辑。
+     *
+     * CountDownLatch 能够使一个线程在等待另外一些线程完成各自工作之后，再继续执行。使用一个计数器进行实现。计数器初始值为线程
+     * 的数量。当每一个线程完成自己任务后，计数器的值就会减一。当计数器的值为 0 时，表示所有的线程都已经完成了任务，然后在
+     * CountDownLatch 上等待的线程就可以恢复执行任务。
+     *
+     * 两者区别：
+     * CountDownLatch 的作用是允许 1 或 N 个线程等待其他线程完成执行；而 CyclicBarrier 则是允许 N 个线程相互等待。
+     * CountDownLatch 的计数器无法被重置；CyclicBarrier 的计数器可以被重置后使用，因此它被称为是循环的 barrier 。
+     *
+     *
+     * Semaphore 是一个控制访问多个共享资源的计数器，和 CountDownLatch 一样，其本质上是一个“共享锁”。一个计数信号量。从概念上
+     * 讲，信号量维护了一个许可集。
+     * 如有必要，在许可可用前会阻塞每一个 acquire，然后再获取该许可。
+     * 每个 release 添加一个许可，从而可能释放一个正在阻塞的获取者。
+     *
+     */
 }

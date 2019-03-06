@@ -34,7 +34,6 @@ public class Main {
      * 并且锁是要加在线程访问的执行资源类的内部方法中，而不是加在线程代码中，以实现高内聚性。
      */
 
-
     /**
      * {@link java.lang.ThreadGroup}示例
      *
@@ -81,7 +80,6 @@ public class Main {
      *
      */
 
-
     /**
      * 线程是操作系统中独立的个体，但这些个体如果不经过特殊处理就不能成为一个整体。线程间的通信就是成为整体的改用方案之一。这样系统
      * 之间的交互性会更强大，大大的提高 CPU 的利用率。
@@ -89,6 +87,17 @@ public class Main {
      * 读写锁：分读锁，写锁。读锁之间不互斥，写锁之间要互斥，读写锁之间要互斥。这是 JVM 控制的，只需加上对应的锁即可。
      *
      * Java里面内置锁 (synchronized) 和 Lock(ReentrantLock) 都是可重入的。
+     *
+     *
+     * 为什么wait, notify 和 notifyAll这些方法不在thread类里面，而是在Object 类里：
+     * 是因为 JAVA提供的锁是对象级的而不是线程级的，每个对象都有一个锁（monitor，也可以成为监视器），通过线程获得。由于wait，notify和 notifyAll
+     * 都是锁级别的操作，所以把他们定义在Object类中因为锁属于对象，这样Java的每一个类都有用于线程间通信的基本方法。并且在Java的线程中并没有可供
+     * 任何对象使用的锁和同步器。
+     *
+     * Java线程池中 submit() 和 execute()方法有什么区别：
+     * 两个方法都可以向线程池提交任务，execute()方法的返回类型是void，它定义在Executor接口中。
+     * 而submit()方法可以返回持有计算结果的Future对象，它定义在ExecutorService接口中，它扩展了Executor接口，其它线程池类像 ThreadPoolExecutor
+     * 和 ScheduledThreadPoolExecutor 都有这些方法。
      */
 
     public static void main(String[] args) {

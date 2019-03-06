@@ -1,8 +1,23 @@
 package zsupplement;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 /**
  * 线程对象在不同的运行时期有不同的状态，状态信息就存在于 state 枚举类（java.lang.Thread.State）中。
  * 调用与线程有关的方法是造成线程状态改变的主要原因。
+ *
+ * 线程池有五种状态：RUNNING, SHUTDOWN, STOP, TIDYING, TERMINATED。
+ *
+ * RUNNING：接收并处理任务，运行时的状态。
+ * SHUTDOWN：不接收但处理现有任务。
+ * STOP：不接收也不处理任务，同时终端当前处理的任务。
+ * TIDYING：所有任务终止，线程池会变为 TIDYING 状态。当线程池变为 TIDYING 状态时，会执行钩子函数 terminated()。
+ * TERMINATED：线程池彻底终止的状态，线程被销毁时的状态。
+ *
+ * 内部变量** ctl **定义为 AtomicInteger ，记录了“线程池中的任务数量”和“线程池的状态”两个信息。共 32 位，其中高 3 位表示”线
+ * 程池状态”，低 29 位表示”线程池中的任务数量”。
  */
 public class Supp1 {
 
@@ -57,7 +72,10 @@ public class Supp1 {
 
     public static void main(String[] args) {
         //t1();
-        t2();
+        //t2();
+        int[] a = {1,2,3};
+        List list = Arrays.asList(a);
+        System.out.println(list.size());
     }
 }
 

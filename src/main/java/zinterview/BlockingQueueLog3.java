@@ -71,9 +71,6 @@ public class BlockingQueueLog3 {
         // 10 线程代码，使用 LinkedBlockingQueue
         t2();
         // 10 线程代码，使用 SynchronousQueue 阻塞队列集合
-
-
-
         //test();
         pool.shutdown();
     }

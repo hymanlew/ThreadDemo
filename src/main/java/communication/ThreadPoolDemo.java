@@ -252,6 +252,6 @@ public class ThreadPoolDemo {
         // 线程池的等待/通知模式功能
         //t3();
         // 优化线程池的创建方式
-        mainNote();
+        //mainNote();
     }
 }

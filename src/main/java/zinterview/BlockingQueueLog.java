@@ -12,6 +12,26 @@ import java.util.concurrent.*;
  * 除是可以阻塞等待的。但是在取出后，集合中对应的元素就没有了。
  * 而 List 是传统数据集合，是非线程安全的，在多线程中也不能保证 FIFO 规则（但手动加入 ReentrantLock 锁机制可以实现），是不能
  * 阻塞等待的。但是其得到元素 get 时，不会影响集合中原有的元素。
+ *
+ *
+ * 阻塞队列实现了 BlockingQueue 接口，并且有多组处理方法：
+ * 抛出异常：add(e) 、remove()、element()
+ * 返回特殊值：offer(e) 、pool()、peek()
+ * 阻塞：put(e) 、take()
+ *
+ * JDK 8 中提供了七个阻塞队列可供使用：
+ * ArrayBlockingQueue ：一个由数组结构组成的有界阻塞队列。
+ * LinkedBlockingQueue ：一个由链表结构组成的无界阻塞队列。
+ * PriorityBlockingQueue ：一个支持优先级排序的无界阻塞队列。
+ * DelayQueue：一个使用优先级队列实现的无界阻塞队列。
+ * LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。
+ * LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列。
+ *
+ * SynchronousQueue：一个不存储元素的阻塞队列。每个 put 必须等待一个 take，否则就会产生一直阻塞的状态。因为它没有任何的内部容
+ * 量，甚至连一个队列的容量都没有，所以必须是实时调用的。
+ *
+ * ArrayBlockingQueue，一个由数组实现的有界阻塞队列。该队列采用 FIFO 的原则对元素进行排序添加的。内部使用可重入锁 ReentrantLock
+ * + Condition 来完成多线程环境的并发操作。
  */
 public class BlockingQueueLog {
 

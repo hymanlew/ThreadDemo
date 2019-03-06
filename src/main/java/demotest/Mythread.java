@@ -1,5 +1,7 @@
 package demotest;
 
+import java.util.concurrent.Callable;
+
 public class Mythread extends Thread{
     @Override
     public void run() {
@@ -37,6 +39,14 @@ class Thread2 extends Thread{
         }
         super.run();
 
+    }
+}
+
+// java中实现多线程的第三种方法，该方法可以获得返回线程执行的返回值。
+class MyCallable implements Callable {
+    @Override
+    public Object call() throws Exception {
+        return null;
     }
 }
 
