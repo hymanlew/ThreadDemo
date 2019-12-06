@@ -1,19 +1,21 @@
 package demotest;
 
+import java.util.ArrayList;
+
 /**
  * java 线程死锁是指，不同的线程都在等待根本不可能被释放的锁，从而导致所有的任务都无法继续完成。所以，死锁是必须避免的，这会造
  * 成线程的假死。
+ *
+ * 观察死锁现象：
+ * 使用 JDK 自带的监测工具，cmd -->  JDK 文件夹/bin（在 IDEA project strucs / SDKS 中可查看到）  -->  执行 jps 命令。
+ * 找到当前类执行的线程 id（DiedLock）  -->  执行 jstack -l pid号码  -->  在最下方会提示出发现一个死锁（Deallock）。
+ *
+ * 死锁是程序设计的 bug，所以在设计时就要避免双方互相持有对方锁的情况。要特别注意死锁跟本例中的嵌套的同步块是没有关系的。
+ *
  */
 public class DiedLock {
 
     public static void t1(){
-        /**
-         * 观察死锁现象：
-         * 使用 JDK 自带的监测工具，cmd -->  JDK 文件夹/bin（在 IDEA project strucs / SDKS 中可查看到）  -->  执行 jps 命令。
-         * 找到当前类执行的线程 id（DiedLock）  -->  执行 jstack -l pid号码  -->  在最下方会提示出发现一个死锁（Deallock）。
-         *
-         * 死锁是程序设计的 bug，所以在设计时就要避免双方互相持有对方锁的情况。要特别注意死锁跟本例中的嵌套的同步块是没有关系的。
-         */
         try {
             Mythreadc myth = new Mythreadc();
             myth.setName("a");
@@ -29,9 +31,34 @@ public class DiedLock {
         }
     }
 
+    static ArrayList list = new ArrayList();
+    static class AddTask implements Runnable{
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            for(int i=0; i<1000; i++){
+                list.add(new Object());
+            }
+        }
+    }
+
+    public static void t2(){
+        Thread t1 = new Thread(new AddTask(), "t1");
+        Thread t2 = new Thread(new AddTask(), "t2");
+        t1.start();
+        t2.start();
+    }
+
     public static void main(String[] args) {
         // 观察死锁现象
-        t1();
+        //t1();
+        // ArrayList 非线程安全
+        t2();
     }
 }
 
