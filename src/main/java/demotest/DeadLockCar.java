@@ -2,6 +2,14 @@ package demotest;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 观察死锁现象：
+ * 使用 JDK 自带的监测工具，cmd -->  JDK 文件夹/bin（在 IDEA project strucs / SDKS 中可查看到）  -->  执行 jps 命令。
+ * 找到当前类执行的线程 id（DeadLockCar）  -->  执行 jstack -l pid号码  -->  在最下方会提示出发现一个死锁（DeadLockCar）。
+ *
+ * @author hyman
+ * @since 2019-12-08
+ */
 public class DeadLockCar extends Thread {
 
     protected Object myDirect;
